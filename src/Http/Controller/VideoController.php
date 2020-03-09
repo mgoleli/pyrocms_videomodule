@@ -36,7 +36,7 @@ class VideoController extends ResourceController
     {
 
         $videos = new VideoModel();
-        $videos = $videos::query()->paginate(2);
+        $videos = $videos::query()->paginate(3);
 //      dd($videos);
         $videos = $videos->where('created_by_id', Auth::id());
         return $this->view->make('visiosoft.module.videos::videos/list', compact('videos'));
@@ -155,6 +155,7 @@ class VideoController extends ResourceController
             redirect('/login?redirect=' . url()->current())->send();
         }
 
+
         $search = $request->get('search');
         $videos = DB::table('videos_video')->where('name', 'like', '%' . $search . '%')->paginate(3);
 
@@ -205,6 +206,8 @@ class VideoController extends ResourceController
     public function videosAjaxCreate()
     {
         $video = $this->video->create($this->request->all());
+
+       //dd($video->name);
         return response()->json(['status' => 'success', 'data' => $video]);
         //$video2 = $this->video->update($id)->create($this->request->all());
         return redirect('videos');

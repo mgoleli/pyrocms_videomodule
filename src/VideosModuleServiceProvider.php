@@ -53,10 +53,10 @@ class VideosModuleServiceProvider extends AddonServiceProvider
         ],
         'videos/edit/{id}' => [
             'as' => 'visiosoft.module.videos::videos_edit',
-            'uses' => 'Visiosoft\VideosModule\Http\Controller\VideoController@edit',
+            'uses' => 'Visiosoft\VideosModule\Http\Controller\VideoController@VideoEdit',
         ],
         'videosAjax' => 'Visiosoft\VideosModule\Http\Controller\VideoController@videosAjax',
-        'videos/videosAjaxCreate' => 'Visiosoft\VideosModule\Http\Controller\VideoController@videosAjaxCreate',
+        'videosAjaxCreate' => 'Visiosoft\VideosModule\Http\Controller\VideoController@videosAjaxCreate',
         'videos/videosAjaxUpdate/{id}' => 'Visiosoft\VideosModule\Http\Controller\VideoController@videosAjaxUpdate',
         'videos/videosAjaxDelete/{id}' => 'Visiosoft\VideosModule\Http\Controller\VideoController@videosAjaxDelete',
     ];
