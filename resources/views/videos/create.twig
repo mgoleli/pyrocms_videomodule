@@ -1,0 +1,80 @@
+
+
+{% extends "theme::layouts/default" %}
+{% block content %}
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="row px-3">
+                <div class="col-md-12 bg-dark text-white p-5">
+
+                </div>
+                <div class="col-md-12 bg-light profile-section">
+                    {% set form = form('videos', 'video').actions({'save':'save'}).get() %}
+
+                    {{ form_open({
+                        'class': 'form ' ~ form.options.class ,
+                        'enctype': 'multipart/form-data',
+                        'url': '/videos/create'
+
+                    })|raw }}
+                    <div class="py-3 px-3 px-sm-0">
+
+
+
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">{{ form.fields.name.label|raw }}</label>
+                            {{ form.fields.name.input|raw }}
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">{{ form.fields.slug.label|raw }}</label>
+                            {{ form.fields.slug.input|raw }}
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">{{ form.fields.username.label|raw }}</label>
+                            {{ form.fields.username.input|raw }}
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">{{ form.fields.video.label|raw }}</label>
+                            {{ form.fields.video.input|raw }}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">{{ form.fields.summary.label|raw }}</label>
+                            {{ form.fields.summary.input|raw }}
+                        </div>
+
+
+
+                            <label class="control-label font-weight-bold">{{ form.fields.category.label|raw }}</label>
+                            <div class="input-wrapper">
+                                <select name="category" class="custom-select form-control"
+                                        data-content="{{ videos.category.id }}"
+                                        data-field_name="videos.category.id"
+                                        data-provides="anomaly.field_type.select">
+                                    {% for categoryField in category %}
+                                        <option value="{{ categoryField.id }}">{{ categoryField.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        <br>
+                        </div>
+                    <div class="form-group">
+                        {{ form.actions|raw }}
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    {{ asset_add("scripts.js", "visiosoft.module.videos::/js/myAjaxCreate.js") }}
+{% endblock %}
