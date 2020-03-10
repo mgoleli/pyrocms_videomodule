@@ -1,7 +1,12 @@
 <?php namespace Visiosoft\VideosModule;
 
 use Anomaly\Streams\Platform\Addon\AddonServiceProvider;
+use Anomaly\TodosModule\Todo\Events\NewVideo;
 use Illuminate\Routing\Router;
+use Visiosoft\VideoModel\Video\Listener\SendTodoMail;
+use Visiosoft\VideoModel\Video\Listener\SendVideoMail;
+use Visiosoft\VideosModule\Video\Contract\VideoRepositoryInterface;
+use Visiosoft\VideosModule\Video\VideoRepository;
 
 class VideosModuleServiceProvider extends AddonServiceProvider
 {
@@ -106,6 +111,10 @@ class VideosModuleServiceProvider extends AddonServiceProvider
         //Visiosoft\VideosModule\Event\ExampleEvent::class => [
         //    Visiosoft\VideosModule\Listener\ExampleListener::class,
         //],
+
+        NewVideo::class => [
+            SendVideoMail::class,
+        ],
     ];
 
     /**
@@ -129,7 +138,11 @@ class VideosModuleServiceProvider extends AddonServiceProvider
      *
      * @type array|null
      */
-    protected $singletons = [];
+    protected $singletons = [
+
+        VideoRepositoryInterface::class => VideoRepository::class,
+
+    ];
 
     /**
      * Additional service providers.
