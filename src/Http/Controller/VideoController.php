@@ -15,8 +15,9 @@ use Visiosoft\ProfileModule\Adress\Form\AdressFormBuilder;
 use Visiosoft\VideosModule\Category\CategoryModel;
 use Visiosoft\VideosModule\Video\Form\VideoFormBuilder;
 use Visiosoft\VideosModule\Video\Table\VideoTableBuilder;
+
 use Visiosoft\VideosModule\Video\VideoModel;
-use Visiosoft\VideosModule\VideosModule;
+
 use Illuminate\Support\Facades\Auth;
 use function GuzzleHttp\Promise\all;
 
@@ -88,7 +89,7 @@ class VideoController extends ResourceController
         return $form->render();
     } */
 
-    public function create(VideoFormBuilder $form, Request $request) //videosAjaxCreate- duplicate
+    public function create(VideoFormBuilder $form, Request $request) //videosAjaxCreate
     {
 //        if (!Auth::user()) {
 //            redirect('/login?redirect=' . url()->current())->send();
@@ -159,8 +160,6 @@ class VideoController extends ResourceController
         $search = $request->get('search');
         $videos = DB::table('videos_video')->where('name', 'like', '%' . $search . '%')->paginate(3);
 
-
-
         return $this->view->make('visiosoft.module.videos::videos/list', compact('videos'));
 
         //return redirect('videos');
@@ -225,9 +224,9 @@ class VideoController extends ResourceController
     {
         $id = $request->id;
 
-        $todoModel = new VideoModel();
-        $todo = $todoModel->getVideosFirst($id);
-        $todo->update([
+        $videoModel = new VideoModel();
+        $video = $videoModel->getVideosFirst($id);
+        $video->update([
             'videos_videos.deleted_at' => date('Y-m-d H:m:s')
         ]);
         return response()->json(['message'=> 'You have succesfully deleted this record']);

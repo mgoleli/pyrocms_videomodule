@@ -80,7 +80,7 @@ class VideosModuleServiceProvider extends AddonServiceProvider
     /**
      * Addon route middleware.
      *
-     * @type array|null
+     * @type array|null vasd
      */
     protected $routeMiddleware = [];
 
