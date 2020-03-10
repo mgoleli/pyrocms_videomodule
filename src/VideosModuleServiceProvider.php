@@ -59,6 +59,19 @@ class VideosModuleServiceProvider extends AddonServiceProvider
         'videosAjaxCreate' => 'Visiosoft\VideosModule\Http\Controller\VideoController@videosAjaxCreate',
         'videos/videosAjaxUpdate/{id}' => 'Visiosoft\VideosModule\Http\Controller\VideoController@videosAjaxUpdate',
         'videos/videosAjaxDelete/{id}' => 'Visiosoft\VideosModule\Http\Controller\VideoController@videosAjaxDelete',
+
+        'export' => [
+             'as'=>     'Visiosoft.module.videos::export',
+             'uses' =>  'Visiosoft\VideosModule\Http\Controller\VideoController@export',
+        ],
+        'import' => [
+            'as'=>     'Visiosoft.module.videos::import',
+            'uses' =>'Visiosoft\VideosModule\Http\Controller\VideoController@import',
+        ],
+        'importExportView' => 'Visiosoft\VideosModule\Http\Controller\VideoController@importExportView',
+
+
+
     ];
 
 

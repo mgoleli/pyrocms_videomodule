@@ -2,9 +2,9 @@
 
 use Anomaly\ApiModule\Resource\Resource;
 use Anomaly\Streams\Platform\Http\Controller\PublicController;
-
-
 use Anomaly\Streams\Platform\Http\Controller\ResourceController;
+use App\Exports\VideosExport;
+use App\Imports\VideosImport;
 use Illuminate\Http\Request;
 use http\QueryString;
 use Illuminate\Support\Facades\DB;
@@ -15,13 +15,12 @@ use Visiosoft\ProfileModule\Adress\Form\AdressFormBuilder;
 use Visiosoft\VideosModule\Category\CategoryModel;
 use Visiosoft\VideosModule\Video\Form\VideoFormBuilder;
 use Visiosoft\VideosModule\Video\Table\VideoTableBuilder;
-
 use Visiosoft\VideosModule\Video\VideoModel;
-
 use Illuminate\Support\Facades\Auth;
 use function GuzzleHttp\Promise\all;
-
 use Illuminate\Support\Facades\Redirect;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class VideoController extends ResourceController
 {
@@ -89,7 +88,7 @@ class VideoController extends ResourceController
         return $form->render();
     } */
 
-    public function create(VideoFormBuilder $form, Request $request) //videosAjaxCreate
+    public function create(VideoFormBuilder $form, Request $request) //videosAjaxCreate- duplicate
     {
 //        if (!Auth::user()) {
 //            redirect('/login?redirect=' . url()->current())->send();
@@ -232,4 +231,20 @@ class VideoController extends ResourceController
         return response()->json(['message'=> 'You have succesfully deleted this record']);
     }
 
+    public function importExportView()
+    {
+        return view('import');
+    }
+
+    public function  export()
+    {
+        return Excel::download(new VideosExport, 'videos.xlsx');
+    }
+
+    public function  import()
+    {
+        Excel::import( new VideosImport, request()->file('file'));
+
+        return back;
+    }
 }
