@@ -3,6 +3,7 @@
 use Anomaly\ApiModule\Resource\Resource;
 use Anomaly\Streams\Platform\Http\Controller\PublicController;
 use Anomaly\Streams\Platform\Http\Controller\ResourceController;
+use Anomaly\UsersModule\User\UserRepository;
 use App\Exports\VideosExport;
 use App\Imports\VideosImport;
 use Illuminate\Http\Request;
@@ -20,6 +21,8 @@ use Illuminate\Support\Facades\Auth;
 use function GuzzleHttp\Promise\all;
 use Illuminate\Support\Facades\Redirect;
 use Maatwebsite\Excel\Facades\Excel;
+use Visiosoft\VideosModule\Video\Events\newVideos;
+
 
 
 class VideoController extends ResourceController
@@ -77,12 +80,17 @@ class VideoController extends ResourceController
 
     private $video;
 
-    public function __construct(VideoModel $videoModel)
+    public function __construct(VideoModel $videoModel, UserRepository $user)
     {
         $this->video = $videoModel;
         parent::__construct();
+        $this->user = $user;
     }
+    public function checkVideoName($videoName)
+    {
+        return (DB::table('videos_video')->where('name', '=', ($videoName)->count()));
 
+    }
     /*public function create(VideoFormBuilder $form)
     {
         return $form->render();
@@ -201,14 +209,34 @@ class VideoController extends ResourceController
         return response()->json($videos);
     }
 
-    public function videosAjaxCreate()
+
+
+    public function videosAjaxCreate(Request $request)
     {
-        $video = $this->video->create($this->request->all());
+        $name =$request->name;
+        $body =$request->body;
+
+        if ($this->checkVideoName($name) > 0) {
+            return response()->json(['message' => 'There is already a record with same name. Please change the name and try again.']);
+        } else {
+            $video = new VideoModel;
+
+            $video->name = $name;
+            $video->body = $body;
+
+            $video>save();
+
+            event(new newVideos($video));
+
+            return response()->json(['message' => 'sccess']);
+        }
+
+       // $video = $this->video->create($this->request->all());
 
        //dd($video->name);
-        return response()->json(['status' => 'success', 'data' => $video]);
+        //return response()->json(['status' => 'success new video', 'data' => $video]);
         //$video2 = $this->video->update($id)->create($this->request->all());
-        return redirect('videos');
+        //return redirect('videos');
     }
 
 
