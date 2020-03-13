@@ -1,0 +1,208 @@
+{% extends "theme::layouts/default" %}
+
+{% block content %}
+    {#        <div>#}
+    {#            <a href="{{ url_route('Visiosoft.module.videos::videos_create') }}"#}
+    {#               class="btn btn-success" role="button" aria-pressed="true">#}
+    {#                Create#}
+    {#            </a>#}
+    {#        </div>#}
+
+
+    <div class="container">
+        <div class="card bg-light mt-3">
+            <div class="card-body">
+                <form action="{{ url_route('Visiosoft.module.videos::import') }}"  method="POST" enctype="multipart/form-data">
+
+                    <input type="file" name="file" class="form-control">
+                    <br>
+                    <button type="submit" class="btn btn-success">Import Video Data</button>
+                    <a class="btn btn-warning" href="{{ url_route('Visiosoft.module.videos::export') }}">Export Video Data</a>
+                </form>
+            </div>
+        </div>
+    </div><br>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+
+
+    <div class="container">
+    <form style="float: left">
+        <input class="form-control" type="text" name="keywords" placeholder="" value="{{ searchValue }}" style="display: inline-block !important; width: 200px;"></input>
+        <input type="submit" name="action" value="Search" class="btn btn-secondary" style="margin-bottom: 5px;"></input>
+        <button class="btn btn-secondary" type="reset" style="margin-bottom: 5px;">Clear</button>
+    </form>
+    </div>
+    {#        <th scope="col">{{ trans("visiosoft.module.videos::field.name") }}</th>#}
+    {#        <th scope="col">{{ trans("visiosoft.module.videos::field.video") }}</th>#}
+    {#        <th scope="col">{{ trans("visiosoft.module.videos::field.summary") }}</th>#}
+
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary btnadd" data-toggle="modal" data-target="#exampleModal2">
+        Createaa
+    </button>
+
+
+    <table id="datatable" class="table table-bordered">
+
+        <thead>
+        <tr class="table table-classified">
+            <th scope="col">{{ trans("visiosoft.module.videos::field.id") }}</th>
+            <th scope="col">{{ trans("visiosoft.module.videos::field.name") }}</th>
+            <th scope="col">{{ trans("visiosoft.module.videos::field.video") }}</th>
+            <th scope="col">{{ trans("visiosoft.module.videos::field.summary") }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for video in videos %}
+            <tr>
+                <td>{{ video.id }}</td>
+                <td>{{ video.name }}</td>
+                <td>{{ video.video }}</td>
+                <td>{{ video.summary }}</td>
+                <td>
+                    <a style="float:right;" class="btn btn-sm btn-success"
+                       href="{{ url_route('visiosoft.module.videos::edit', [video.id]) }}"
+                       role="button">
+                        <i class="fas fa-pencil-alt" aria-hidden="true"></i>Edit</a>
+                    <a style="float:right; margin-right: 10px;" class="btn btn-sm btn-danger"
+                       data-id="{{ video.id }}"
+                       role="button"
+                       onclick="return confirm('This action will delete the record from your table. Do you want to proceed?')">
+                        <i class="fas fa-pencil-alt" aria-hidden="true"></i>Delete</a>
+                </td>
+            </tr>
+
+        {% endfor %}
+
+
+        </tbody>
+
+    </table>
+    {{ videos.links()|raw }}
+
+    <!-- ADD_Modal -->
+    <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">ADD</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="addform">
+                    <div class="modal-body">
+                        {% set form = form('videos', 'video').actions({'save':'save'}).get() %}
+
+                        {{ form_open({
+                            'class': 'form ' ~ form.options.class ,
+                            'enctype': 'multipart/form-data',
+                            'id': 'addform',
+                            'url': '/videos/create',
+
+                        })|raw }}
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">{{ form.fields.name.label|raw }}</label>
+                            {{ form.fields.name.input|raw }}
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">{{ form.fields.slug.label|raw }}</label>
+                            {{ form.fields.slug.input|raw }}
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">{{ form.fields.username.label|raw }}</label>
+                            {{ form.fields.username.input|raw }}
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">{{ form.fields.video.label|raw }}</label>
+                            {{ form.fields.video.input|raw }}
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold">{{ form.fields.summary.label|raw }}</label>
+                            {{ form.fields.summary.input|raw }}
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+
+            $('#exampleModal2').on('submit', function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/videosAjaxCreate',
+                    data: $('#addform').serialize(),
+                    success: function (data) {
+                        console.log(data);
+                        $('#exampleModal2').modal('hide');
+                        alert("veri eklendi");
+                        location.reload();
+
+                    },
+                    error: function (error) //
+                    {
+                        console.log(error)
+                        alert("veri eklenmedi");
+                    }
+                });
+            });
+        });
+    </script>
+
+
+    <script>
+
+        $('.btn-danger').click(function (e) {
+            e.preventDefault();
+            var id = $(this).data("id");
+
+            console.log(id);
+
+            $.ajax({
+                type: 'DELETE',
+                url: 'videos/videosAjaxDelete/' + id,
+                data: {id: id},
+                success: function (data) {
+                    alert(data.message);
+                    window.location.reload();
+                }
+            });
+
+        });
+
+
+    </script>
+
+{% endblock %}

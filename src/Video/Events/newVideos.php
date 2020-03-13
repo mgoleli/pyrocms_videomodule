@@ -1,11 +1,12 @@
-<?php namespace Anomaly\TodosModule\Todo\Events;
+<?php namespace Visiosoft\VideosModule\Video\Events;
 
 use Illuminate\Support\Facades\Auth;
 
-class NewVideo
+class NewVideos
 {
 
     public $video;
+    public $user;
 
     public function __construct($video)
     {

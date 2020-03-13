@@ -8,6 +8,12 @@ use Anomaly\Streams\Platform\Http\Controller\AdminController;
 class VideoController extends AdminController
 {
 
+    protected $video;
+    public function  __construct(UserRepository $user)
+    {
+
+    }
+
     /**
      * Display an index of existing entries.
      *

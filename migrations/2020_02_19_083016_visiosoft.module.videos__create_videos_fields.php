@@ -32,12 +32,7 @@ class VisiosoftModuleVideosCreateVideosFields extends Migration
             'type' => 'anomaly.field_type.video',
         ],
         'summary' => 'anomaly.field_type.text',
-        "category" => [  //category fields'ini category modeliyle ilişkilendir
-            "type" => "anomaly.field_type.relationship",
-            "config" => [
-                "related" => \Visiosoft\VideosModule\Category\CategoryModel::class,
-            ]
-        ]
+        'deleted_at' => 'anomaly.field_type.datetime',
     ];
 
 }

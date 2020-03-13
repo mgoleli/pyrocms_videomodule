@@ -1,11 +1,11 @@
 <?php namespace Visiosoft\VideosModule;
 
 use Anomaly\Streams\Platform\Addon\AddonServiceProvider;
-use Anomaly\TodosModule\Todo\Events\NewVideo;
 use Illuminate\Routing\Router;
-use Visiosoft\VideoModel\Video\Listener\SendTodoMail;
-use Visiosoft\VideoModel\Video\Listener\SendVideoMail;
+use Visiosoft\NotifyModule\Notify\Listeners\SendMail;
 use Visiosoft\VideosModule\Video\Contract\VideoRepositoryInterface;
+use Visiosoft\VideosModule\Video\Events\NewVideos;
+
 use Visiosoft\VideosModule\Video\VideoRepository;
 
 class VideosModuleServiceProvider extends AddonServiceProvider
@@ -47,6 +47,7 @@ class VideosModuleServiceProvider extends AddonServiceProvider
     protected $routes = [
 
 
+        'videos/search' => 'Visiosoft\VideosModule\Http\Controller\VideoController@algSearch',
         'admin/videos' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideoController@index',
         'admin/videos/create' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideoController@create',
         'admin/videos/edit/{id}' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideoController@edit',
@@ -57,8 +58,8 @@ class VideosModuleServiceProvider extends AddonServiceProvider
             'uses' => 'Visiosoft\VideosModule\Http\Controller\VideoController@create',
         ],
         'videos/edit/{id}' => [
-            'as' => 'visiosoft.module.videos::videos_edit',
-            'uses' => 'Visiosoft\VideosModule\Http\Controller\VideoController@VideoEdit',
+            'as' => 'visiosoft.module.videos::edit',
+            'uses' => 'Visiosoft\VideosModule\Http\Controller\VideoController@edit',
         ],
         'videosAjax' => 'Visiosoft\VideosModule\Http\Controller\VideoController@videosAjax',
         'videosAjaxCreate' => 'Visiosoft\VideosModule\Http\Controller\VideoController@videosAjaxCreate',
@@ -74,6 +75,10 @@ class VideosModuleServiceProvider extends AddonServiceProvider
             'uses' =>'Visiosoft\VideosModule\Http\Controller\VideoController@import',
         ],
         'importExportView' => 'Visiosoft\VideosModule\Http\Controller\VideoController@importExportView',
+        '/' => [
+
+            'uses'   => 'Visiosoft\VideosModule\Http\Controller\VideoController@search',
+        ]
 
 
 
@@ -103,18 +108,14 @@ class VideosModuleServiceProvider extends AddonServiceProvider
     protected $routeMiddleware = [];
 
     /**
-     * The addon event listeners.
+     * The addon Events listeners.
      *
      * @type array|null
      */
     protected $listeners = [
         //Visiosoft\VideosModule\Event\ExampleEvent::class => [
-        //    Visiosoft\VideosModule\Listener\ExampleListener::class,
+        //    Visiosoft\VideosModule\Listeners\ExampleListener::class,
         //],
-
-        NewVideo::class => [
-            SendVideoMail::class,
-        ],
     ];
 
     /**
@@ -151,6 +152,7 @@ class VideosModuleServiceProvider extends AddonServiceProvider
      */
     protected $providers = [
         //\ExamplePackage\Provider\ExampleProvider::class
+
     ];
 
     /**

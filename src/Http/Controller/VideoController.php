@@ -14,6 +14,7 @@ use Visiosoft\LocationModule\Country\CountryModel;
 use Visiosoft\ProfileModule\Adress\AdressModel;
 use Visiosoft\ProfileModule\Adress\Form\AdressFormBuilder;
 use Visiosoft\VideosModule\Category\CategoryModel;
+
 use Visiosoft\VideosModule\Video\Form\VideoFormBuilder;
 use Visiosoft\VideosModule\Video\Table\VideoTableBuilder;
 use Visiosoft\VideosModule\Video\VideoModel;
@@ -22,7 +23,6 @@ use function GuzzleHttp\Promise\all;
 use Illuminate\Support\Facades\Redirect;
 use Maatwebsite\Excel\Facades\Excel;
 use Visiosoft\VideosModule\Video\Events\newVideos;
-
 
 
 class VideoController extends ResourceController
@@ -37,39 +37,23 @@ class VideoController extends ResourceController
 
     public function index(VideoTableBuilder $table)
     {
+        $videos = DB::table('videos_video')
+                        ->orderBy('id', 'desc')
+                        ->where('created_by_id', Auth::id())
+                        ->where('deleted_at', NULL);
 
-        $videos = new VideoModel();
-        $videos = $videos::query()->paginate(3);
-//      dd($videos);
-        $videos = $videos->where('created_by_id', Auth::id());
-        return $this->view->make('visiosoft.module.videos::videos/list', compact('videos'));
+        if ($this->request->action == "Search") {
+            $searchValue = $this->request->get('keywords');
+            $videos = $videos->where('name', 'like', '%' . $searchValue . '%');
 
-//       $q =  DB::table('videos_video')->get();
-//       $rs = $q->toArray();
-//       $json = array();
-//       foreach ($rs as $row){
-//           $json[] = $row;
-//       }
-//        echo json_encode($json);
+            /*if (count($videos) == 0) {
+                $message = "There is no any records based on your search criteria. Please try with different inputs.";
+            }*/
+        }
+        $videos = $videos->paginate(3);
 
-//        $id = Auth::id();
-//        if($this->request->action == "search"){
-//        $searchValue = $this->request->get('keywords');
-//        $videos = DB::table('videos_video')
-//            ->where('name', 'like', '%'.$searchValue.'%')
-//            ->where('deleted_at', NULL)->where('created_by_id', $id)
-//            ->paginate(3);
-//                if(count($videos) == 0){
-//                    $message = "kayıt yok";
-//                }
-//                return $this->view
-//                    ->make('visiosoft.module.videos', compact('username', 'videos', 'id', 'message'));
-//
-//        }
-//            $videos = VideoModel::query()->where('created_by_id', $id)
-//            ->where('deleted_at', NULL)->paginate(3);
+        return $this->view->make('visiosoft.module.videos::listele/list', compact('videos', 'searchValue'));
     }
-
 
     /**
      * Create a new entry.
@@ -86,11 +70,7 @@ class VideoController extends ResourceController
         parent::__construct();
         $this->user = $user;
     }
-    public function checkVideoName($videoName)
-    {
-        return (DB::table('videos_video')->where('name', '=', ($videoName)->count()));
 
-    }
     /*public function create(VideoFormBuilder $form)
     {
         return $form->render();
@@ -129,17 +109,12 @@ class VideoController extends ResourceController
         if (!Auth::user()) {
             redirect('/login?redirect=' . url()->current())->send();
         }
-
         $videos = new VideoModel();
-        $videos = $videos::query()->paginate(3);
+        $videos = $videos::orderBy('id', 'desc')->get();
         //dd($videos);
         $category = CategoryModel::all();
         return $this->view->make('visiosoft.module.videos::videos/edit', compact('id', 'category', 'videos'));
-
-
-//
-
-
+        //
     }
 
     public function VideoDelete($id)  //
@@ -163,7 +138,6 @@ class VideoController extends ResourceController
             redirect('/login?redirect=' . url()->current())->send();
         }
 
-
         $search = $request->get('search');
         $videos = DB::table('videos_video')->where('name', 'like', '%' . $search . '%')->paginate(3);
 
@@ -180,22 +154,22 @@ class VideoController extends ResourceController
          return $this->view->make('visiosoft.module.videos::videos/list', compact('videos'));
      } */
 
-    public function edit($id)
-    {
-        if (!Auth::user()) {
-            redirect('/login?redirect=' . url()->current())->send();
-        }
-
-        /*$videoModel = new videoModel();
-        $video = $videoModel->getUserAdress($id);
-        //dd($video);
-        if ($video->getAttribute('updated_by_id') == Auth::id()) {
-            $videos = VideoModel::all();
-            return $this->view->make('visiosoft.module.videos::videos/edit', compact('videos')); //
-        }
-  */
-        // return $form->render($id);
-    }
+//    public function edit($id)
+//    {
+//        if (!Auth::user()) {
+//            redirect('/login?redirect=' . url()->current())->send();
+//        }
+//
+//        /*$videoModel = new videoModel();
+//        $video = $videoModel->getUserAdress($id);
+//        //dd($video);
+//        if ($video->getAttribute('updated_by_id') == Auth::id()) {
+//            $videos = VideoModel::all();
+//            return $this->view->make('visiosoft.module.videos::videos/edit', compact('videos')); //
+//        }
+//  */
+//        // return $form->render($id);
+//    }
 
     public function videosAjax()
     {
@@ -209,54 +183,52 @@ class VideoController extends ResourceController
         return response()->json($videos);
     }
 
+    public function checkVideoName($videoName)
+    {
+        return DB::table('videos_video')->where('name', '=', $videoName)->count();
+
+    }
 
 
     public function videosAjaxCreate(Request $request)
     {
-        $name =$request->name;
-        $body =$request->body;
+        $video = new VideoModel();
+        $video = $this->video->create($this->request->all());
+        event(new newVideos($video));
+        return response()->json(['status' => 'success', 'data' => $video]);
 
-        if ($this->checkVideoName($name) > 0) {
-            return response()->json(['message' => 'There is already a record with same name. Please change the name and try again.']);
-        } else {
-            $video = new VideoModel;
 
-            $video->name = $name;
-            $video->body = $body;
-
-            $video>save();
-
-            event(new newVideos($video));
-
-            return response()->json(['message' => 'sccess']);
-        }
-
-       // $video = $this->video->create($this->request->all());
-
-       //dd($video->name);
-        //return response()->json(['status' => 'success new video', 'data' => $video]);
         //$video2 = $this->video->update($id)->create($this->request->all());
-        //return redirect('videos');
+//        return redirect('videos');
+
     }
 
+    public function edit(Request $request, $id)
+    {
+        $id = $request->route('id');
+        $videoModel = new VideoModel();
+        $video = $videoModel->getVideosFirst($id);
 
-    public function videosAjaxUpdate()
+        return $this->view->make('visiosoft.module.videos::edit', compact('video'));
+    }
+
+    public function videosAjaxUpdate(Request $request)
     {
         //$video = $this->video->query()->find($id)->update($this->request->all()); //Request $id hepsini id ye aktar
         $video = $this->video->query()->find($this->request->id)->update($this->request->all()); //sadece id al
         return response()->json(['status' => 'success', 'data' => $video]);
     }
 
-    public function videosAjaxDelete(Request $request, $id)
+    public function videosAjaxDelete(Request $request)
     {
         $id = $request->id;
 
         $videoModel = new VideoModel();
         $video = $videoModel->getVideosFirst($id);
         $video->update([
-            'videos_videos.deleted_at' => date('Y-m-d H:m:s')
+            'videos_video.deleted_at' => date('Y-m-d H:m:s')
         ]);
-        return response()->json(['message'=> 'You have succesfully deleted this record']);
+        return response()->json(['message' => 'You have successfuly deleted this record']);
     }
 
     public function importExportView()
@@ -264,16 +236,24 @@ class VideoController extends ResourceController
         return view('import');
     }
 
-    public function  export()
+    public function export()
     {
         return Excel::download(new VideosExport, 'videos.xlsx');
     }
 
-    public function  import()
+    public function import()
     {
 //        dd(123);
-        Excel::import( new VideosImport, request()->file('file'));
+        Excel::import(new VideosImport, request()->file('file'));
+        return $this->view->make('visiosoft.module.videos::listele/list');
 
-        return back;
+    }
+
+    //algoliaSearch
+    public function algSearch(Request $request)
+    {
+        $query = 'video';
+        $videos = VideoModel::search($query)->get();
+        return $videos;
     }
 }

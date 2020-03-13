@@ -23,7 +23,7 @@ class VisiosoftModuleVideosCreateVideoStream extends Migration
         'title_column' => 'name',
         'translatable' => false,
         'versionable' => false,
-        'trashable' => true,
+        'trashable' => false,
         'searchable' => false,
         'sortable' => false,
     ];
@@ -34,10 +34,9 @@ class VisiosoftModuleVideosCreateVideoStream extends Migration
      * @var array
      */
     protected $assignments = [  //video streams için gereklilikler
-        'id',
         'name' => [
             'translatable' => false,
-            'required' => false,  //
+            'required' => true,  //
         ],
         'username' => [
             'translatable' => false,
@@ -48,12 +47,13 @@ class VisiosoftModuleVideosCreateVideoStream extends Migration
             'required' => false,
         ],
         'video' => [
-            'required' => false,
+            'required' => true,
         ],
         'summary' => [
             'translatable' => false,
         ],
-        'category'
+        'category',
+        'deleted_at',
     ];
 
 }
