@@ -39,6 +39,7 @@
     <div class="container">
     <form style="float: left">
         <input class="form-control" type="text" name="keywords" placeholder="" value="{{ searchValue }}" style="display: inline-block !important; width: 200px;"></input>
+{#        value="{{ searchValue }}"#}
         <input type="submit" name="action" value="Search" class="btn btn-secondary" style="margin-bottom: 5px;"></input>
         <button class="btn btn-secondary" type="reset" style="margin-bottom: 5px;">Clear</button>
     </form>
@@ -62,6 +63,8 @@
             <th scope="col">{{ trans("visiosoft.module.videos::field.name") }}</th>
             <th scope="col">{{ trans("visiosoft.module.videos::field.video") }}</th>
             <th scope="col">{{ trans("visiosoft.module.videos::field.summary") }}</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
@@ -70,6 +73,7 @@
                 <td>{{ video.id }}</td>
                 <td>{{ video.name }}</td>
                 <td>{{ video.video }}</td>
+                <td>{{ video.summary }}</td>
                 <td>{{ video.summary }}</td>
                 <td>
                     <a style="float:right;" class="btn btn-sm btn-success"
@@ -168,8 +172,7 @@
                         console.log(data);
                         $('#exampleModal2').modal('hide');
                         alert("veri eklendi");
-                        location.reload();
-
+                        window.location.reload()
                     },
                     error: function (error) //
                     {
@@ -204,5 +207,7 @@
 
 
     </script>
+
+
 
 {% endblock %}

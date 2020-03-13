@@ -37,6 +37,10 @@ class VideoController extends ResourceController
 
     public function index(VideoTableBuilder $table)
     {
+        if (!Auth::user()) {
+            redirect('/login?redirect=' . url()->current())->send();
+      }
+
         $videos = DB::table('videos_video')
                         ->orderBy('id', 'desc')
                         ->where('created_by_id', Auth::id())
@@ -199,7 +203,7 @@ class VideoController extends ResourceController
 
 
         //$video2 = $this->video->update($id)->create($this->request->all());
-//        return redirect('videos');
+        return $this->view->make('visiosoft.module.videos::listele/list', compact('video'));
 
     }
 
@@ -217,6 +221,7 @@ class VideoController extends ResourceController
         //$video = $this->video->query()->find($id)->update($this->request->all()); //Request $id hepsini id ye aktar
         $video = $this->video->query()->find($this->request->id)->update($this->request->all()); //sadece id al
         return response()->json(['status' => 'success', 'data' => $video]);
+        return $this->view->make('visiosoft.module.videos::edit', compact('video'));
     }
 
     public function videosAjaxDelete(Request $request)
@@ -252,8 +257,9 @@ class VideoController extends ResourceController
     //algoliaSearch
     public function algSearch(Request $request)
     {
-        $query = 'video';
+        $query = 'asli';
         $videos = VideoModel::search($query)->get();
+
         return $videos;
     }
 }
