@@ -9,6 +9,7 @@
     {#        </div>#}
 
 
+
     <div class="container">
         <div class="card bg-light mt-3">
             <div class="card-body">
@@ -33,15 +34,16 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 
 
     <div class="container">
     <form style="float: left">
-        <input class="form-control" type="text" name="keywords" placeholder="" value="{{ searchValue }}" style="display: inline-block !important; width: 200px;"></input>
+        <input class="form-control" id="myInput" type="text" name="keywords" placeholder="" value="{{ searchValue }}" style="display: inline-block !important; width: 200px;"></input>
 {#        value="{{ searchValue }}"#}
         <input type="submit" name="action" value="Search" class="btn btn-secondary" style="margin-bottom: 5px;"></input>
-        <button class="btn btn-secondary" type="reset" style="margin-bottom: 5px;">Clear</button>
+        <button onclick="document.getElementById('myInput').value = ''" class="btn btn-secondary"  type="" style="margin-bottom: 5px;">Clear</button>
     </form>
     </div>
     {#        <th scope="col">{{ trans("visiosoft.module.videos::field.name") }}</th>#}
@@ -50,10 +52,13 @@
 
 
     <!-- Button trigger modal -->
+
+    <div class="container">
     <button type="button" class="btn btn-primary btnadd" data-toggle="modal" data-target="#exampleModal2">
         Createaa
     </button>
-
+        <button type="button" class="btn glyphicon-refresh" value="get data" id="data">Yenile</button>
+    </div>
 
     <table id="datatable" class="table table-bordered">
 
@@ -74,10 +79,10 @@
                 <td>{{ video.name }}</td>
                 <td>{{ video.video }}</td>
                 <td>{{ video.summary }}</td>
-                <td>{{ video.summary }}</td>
+
                 <td>
-                    <a style="float:right;" class="btn btn-sm btn-success"
-                       href="{{ url_route('visiosoft.module.videos::edit', [video.id]) }}"
+                    <a style="float:right;" class="btn btn-sm btn-success editbtn"
+
                        role="button">
                         <i class="fas fa-pencil-alt" aria-hidden="true"></i>Edit</a>
                     <a style="float:right; margin-right: 10px;" class="btn btn-sm btn-danger"
@@ -96,6 +101,18 @@
     </table>
     {{ videos.links()|raw }}
 
+    </div>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+    function RefreshTable() {
+        $('#datatable').load("/videos #datatable" );
+    }
+    $('#data').on("click", RefreshTable);
+    })
+
+    </script>
+
     <!-- ADD_Modal -->
     <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
@@ -109,43 +126,28 @@
                 </div>
                 <form id="addform">
                     <div class="modal-body">
-                        {% set form = form('videos', 'video').actions({'save':'save'}).get() %}
 
-                        {{ form_open({
-                            'class': 'form ' ~ form.options.class ,
-                            'enctype': 'multipart/form-data',
-                            'id': 'addform',
-                            'url': '/videos/create',
-
-                        })|raw }}
-                        <div class="form-group">
-                            <label class="control-label font-weight-bold">{{ form.fields.name.label|raw }}</label>
-                            {{ form.fields.name.input|raw }}
-                        </div>
 
 
                         <div class="form-group">
-                            <label class="control-label font-weight-bold">{{ form.fields.slug.label|raw }}</label>
-                            {{ form.fields.slug.input|raw }}
-                        </div>
-
-
-                        <div class="form-group">
-                            <label class="control-label font-weight-bold">{{ form.fields.username.label|raw }}</label>
-                            {{ form.fields.username.input|raw }}
-                        </div>
-
-
-                        <div class="form-group">
-                            <label class="control-label font-weight-bold">{{ form.fields.video.label|raw }}</label>
-                            {{ form.fields.video.input|raw }}
+                            <label>Name:</label>
+                            <input type="text" onchange="myFunction()" name="name" id="nameA" class="form-control" placeholder="Name">
                         </div>
 
                         <div class="form-group">
-                            <label class="control-label font-weight-bold">{{ form.fields.summary.label|raw }}</label>
-                            {{ form.fields.summary.input|raw }}
+                            <label>slug:</label>
+                            <input type="text"  name="slug"   id="slugA"  class="form-control" placeholder="slug">
                         </div>
 
+                        <div class="form-group">
+                            <label>video:</label>
+                            <input type="text" name="video"  class="form-control" placeholder="video">
+                        </div>
+
+                        <div class="form-group">
+                            <label>summary:</label>
+                            <input type="text" name="summary" class="form-control" placeholder="summary">
+                        </div>
                     </div>
 
                     <div class="modal-footer">
@@ -156,7 +158,46 @@
             </div>
         </div>
     </div>
+    <!-- EDIT_Modal -->
+    <div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="editformID">
+                    <div class="modal-body">
 
+
+                        <div class="form-group">
+                                            <input type="hidden" name="id" id="id" class="form-control" value="">
+                                            <label>Name:</label>
+                                            <input type="text" name="name" id="name" class="form-control">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Video:</label>
+                                            <input type="text" name="video" id="video" class="form-control" >
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Summary:</label>
+                                            <input type="text" name="summary" id="summary" class="form-control" >
+                                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary btn-submit">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script>
         $(document).ready(function () {
@@ -172,7 +213,7 @@
                         console.log(data);
                         $('#exampleModal2').modal('hide');
                         alert("veri eklendi");
-                        window.location.reload()
+                        //location.reload();
                     },
                     error: function (error) //
                     {
@@ -187,25 +228,81 @@
 
     <script>
 
+
         $('.btn-danger').click(function (e) {
-            e.preventDefault();
-            var id = $(this).data("id");
 
-            console.log(id);
+                e.preventDefault();
+                var id = $(this).data("id");
 
-            $.ajax({
-                type: 'DELETE',
-                url: 'videos/videosAjaxDelete/' + id,
-                data: {id: id},
-                success: function (data) {
-                    alert(data.message);
-                    window.location.reload();
-                }
-            });
+                $.ajax({
+                    type: 'DELETE',
+                    url: 'videos/videosAjaxDelete/' + id,
+                    data: {id: id},
+                    success: function (data) {
+                        alert(data.message);
+                        //location.reload();
+                    }
+                });
 
         });
 
 
+    </script>
+
+
+
+    <script>
+        $(document).ready(function(){
+            $("#myinput").on("input", function(){
+                // Print entered value in a div box
+                $("#result").text($(this).val());
+            });
+        });
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.editbtn').on('click', function () {
+                $('#exampleModal3').modal('show');
+
+                $tr = $(this).closest('tr');
+                var data = $tr.children('td').map(function () {
+                    return $(this).text();
+                }).get();
+                console.log(data);
+                $('#id').val(data[0]);
+                $('#name').val(data[1]);
+                $('#video').val(data[2]);
+                $('#summary').val(data[3]);
+            });
+
+            $(".btn-submit").click(function(e){
+                e.preventDefault();
+                var id = $("input[name=id]").val();
+                var name = $("input[name=name]").val();
+                var video = $("input[name=video]").val();
+                var summary = $("input[name=summary]").val();
+                $.ajax({
+                    type:'PUT',
+                    url:'/videos/videosAjaxUpdate/' + id,
+                    // data:{id: id, name:name, video:video, summary:summary},
+                    data: $('#editformID').serialize(),
+                    success:function(data){
+                        $('#exampleModal3').modal('hide');
+                        alert("güncelleme basarili");
+
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script> // for slug
+    function myFunction() {
+    var x = document.getElementById("nameA").value;
+    document.getElementById("slugA").value = "-" + x.toLowerCase();
+    }
     </script>
 
 

@@ -15,6 +15,7 @@ use Visiosoft\ProfileModule\Adress\AdressModel;
 use Visiosoft\ProfileModule\Adress\Form\AdressFormBuilder;
 use Visiosoft\VideosModule\Category\CategoryModel;
 
+use Visiosoft\VideosModule\Video\Events\deleteVideos;
 use Visiosoft\VideosModule\Video\Form\VideoFormBuilder;
 use Visiosoft\VideosModule\Video\Table\VideoTableBuilder;
 use Visiosoft\VideosModule\Video\VideoModel;
@@ -59,12 +60,6 @@ class VideoController extends ResourceController
         return $this->view->make('visiosoft.module.videos::listele/list', compact('videos', 'searchValue'));
     }
 
-    /**
-     * Create a new entry.
-     *
-     * @param VideoFormBuilder $form
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
 
     private $video;
 
@@ -198,6 +193,7 @@ class VideoController extends ResourceController
     {
         $video = new VideoModel();
         $video = $this->video->create($this->request->all());
+
         event(new newVideos($video));
         return response()->json(['status' => 'success', 'data' => $video]);
 
@@ -216,12 +212,26 @@ class VideoController extends ResourceController
         return $this->view->make('visiosoft.module.videos::edit', compact('video'));
     }
 
-    public function videosAjaxUpdate(Request $request)
+    public function videosAjaxUpdate(Request $request, $id)
     {
         //$video = $this->video->query()->find($id)->update($this->request->all()); //Request $id hepsini id ye aktar
-        $video = $this->video->query()->find($this->request->id)->update($this->request->all()); //sadece id al
-        return response()->json(['status' => 'success', 'data' => $video]);
-        return $this->view->make('visiosoft.module.videos::edit', compact('video'));
+//        $video = $this->video->query()->find($this->request->id)->update($this->request->all()); //sadece id al
+
+        $videoModel = new videoModel();
+
+        $id = $request->id;
+        $video= $videoModel->getVideosFirst($id);
+
+
+        DB::table('videos_video')->where('id', $id)->update([
+            'name' => $request->name,
+            'video' => $request->video,
+            'summary' => $request->summary
+        ]);
+
+        return response()->json(['message' => 'You have succesfully updated this record']);
+
+        //return $this->view->make('visiosoft.module.videos::edit', compact('video'));
     }
 
     public function videosAjaxDelete(Request $request)
@@ -233,6 +243,7 @@ class VideoController extends ResourceController
         $video->update([
             'videos_video.deleted_at' => date('Y-m-d H:m:s')
         ]);
+        event(new deleteVideos($video));
         return response()->json(['message' => 'You have successfuly deleted this record']);
     }
 
