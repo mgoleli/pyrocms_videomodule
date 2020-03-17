@@ -47,7 +47,9 @@ class VideosModuleServiceProvider extends AddonServiceProvider
     protected $routes = [
 
 
-        'videos/search' => 'Visiosoft\VideosModule\Http\Controller\VideoController@algSearch',
+        'videos/searchdb' => 'Visiosoft\VideosModule\Http\Controller\VideoController@searchdb',
+        'videos/algsearch' => 'Visiosoft\VideosModule\Http\Controller\VideoController@algSearch',
+        'listele/list' => 'Visiosoft\VideosModule\Http\Controller\VideoController@search',
         'admin/videos' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideoController@index',
         'admin/videos/create' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideoController@create',
         'admin/videos/edit/{id}' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideoController@edit',
@@ -75,10 +77,10 @@ class VideosModuleServiceProvider extends AddonServiceProvider
             'uses' =>'Visiosoft\VideosModule\Http\Controller\VideoController@import',
         ],
         'importExportView' => 'Visiosoft\VideosModule\Http\Controller\VideoController@importExportView',
-        '/' => [
-
-            'uses'   => 'Visiosoft\VideosModule\Http\Controller\VideoController@search',
-        ]
+//        '/' => [
+//
+//            'uses'   => 'Visiosoft\VideosModule\Http\Controller\VideoController@search',
+//        ]
 
 
 

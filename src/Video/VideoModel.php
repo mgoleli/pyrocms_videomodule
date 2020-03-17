@@ -1,5 +1,6 @@
 <?php namespace Visiosoft\VideosModule\Video;
 
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Scout\Searchable;
 use Visiosoft\ProfileModule\Adress\AdressModel;
@@ -10,6 +11,7 @@ use Anomaly\Streams\Platform\Model\Videos\VideosVideoEntryModel;
 class VideoModel extends VideosVideoEntryModel implements VideoInterface
 {
     use Searchable;
+    use Notifiable;
     public function getVideos($id = null) {
         if($id == null)
         {
@@ -33,9 +35,13 @@ class VideoModel extends VideosVideoEntryModel implements VideoInterface
 
     }
 
+    protected $fillable  = [
+            'name', 'slug', 'video', 'summary',
+        ];
+
     public function searchableAs()
     {
-        return 'List';
+        return 'list';
     }
     public function toSearchableArray()
     {

@@ -10,18 +10,13 @@ use Illuminate\Http\Request;
 use http\QueryString;
 use Illuminate\Support\Facades\DB;
 use mysql_xdevapi\Table;
-use Visiosoft\LocationModule\Country\CountryModel;
-use Visiosoft\ProfileModule\Adress\AdressModel;
-use Visiosoft\ProfileModule\Adress\Form\AdressFormBuilder;
 use Visiosoft\VideosModule\Category\CategoryModel;
-
 use Visiosoft\VideosModule\Video\Events\deleteVideos;
 use Visiosoft\VideosModule\Video\Form\VideoFormBuilder;
 use Visiosoft\VideosModule\Video\Table\VideoTableBuilder;
 use Visiosoft\VideosModule\Video\VideoModel;
 use Illuminate\Support\Facades\Auth;
-use function GuzzleHttp\Promise\all;
-use Illuminate\Support\Facades\Redirect;
+
 use Maatwebsite\Excel\Facades\Excel;
 use Visiosoft\VideosModule\Video\Events\newVideos;
 
@@ -133,16 +128,24 @@ class VideoController extends ResourceController
 
     public function search(Request $request)
     {
-        if (!Auth::user()) {
-            redirect('/login?redirect=' . url()->current())->send();
-        }
+//        if (!Auth::user()) {
+//            redirect('/login?redirect=' . url()->current())->send();
+//        }
+//
+//        $search = $request->get('search');
+//        $videos = DB::table('videos_video')->where('name', 'like', '%' . $search . '%')->paginate(3);
+//
+//        return $this->view->make('visiosoft.module.videos::videos/list', compact('videos'));
+//
+//        //return redirect('videos');
 
-        $search = $request->get('search');
-        $videos = DB::table('videos_video')->where('name', 'like', '%' . $search . '%')->paginate(3);
 
-        return $this->view->make('visiosoft.module.videos::videos/list', compact('videos'));
+            $query = $request->get('search');
 
-        //return redirect('videos');
+
+            $videos = VideoModel::search($query)->get();
+
+        return view('visiosoft.module.videos::listele/list', compact('videos'));
     }
 
 
@@ -181,6 +184,60 @@ class VideoController extends ResourceController
         $videos = $this->video->query()->get();
         return response()->json($videos);
     }
+
+
+    public function searchdb(Request $request)
+    {
+//    dd('sda');
+        if($request->ajax()){
+            $output = '';
+            $query = $request->get('query');
+            if($query != ''){
+                $videos = DB::table('videos_video')
+                    ->where('name', 'like', '%' . $query.'%')
+                    ->orWhere('video', 'like', '%'.$query.'%')
+                    ->orWhere('summary', 'like', '%'.$query.'%')
+                    ->orderBy('id', 'desc')
+                    ->where('deleted_at', NULL)
+                    ->where('created_by_id', Auth::id())
+                    ->get();
+                //dd($videos);
+            }
+
+            else {
+                $videos = DB::table('videos_video')
+                    ->orderBy('id', 'desc')
+                    ->get();
+            }
+            $total_row = $videos->count();
+            //dd($total_row);
+            if($total_row > 0){
+                foreach ($videos as $video){
+                    $output .= '
+                    <tr>
+                        <td> ' .$video->name.' </td>
+                        <td> ' .$video->video.' </td>
+                        <td> ' .$video->summary.' </td>
+                     </tr>   
+                    ';
+                }
+            }
+            else {
+                $output = '
+                <tr>
+                <td align="center" colspan="5"> </td>
+                </tr>
+                ';
+            }
+            $videos = array(
+                'table_data' => $output,
+                'total_data' => $total_row,
+            );
+            echo json_encode($videos);
+        }
+    }
+
+
 
     public function checkVideoName($videoName)
     {
@@ -268,7 +325,7 @@ class VideoController extends ResourceController
     //algoliaSearch
     public function algSearch(Request $request)
     {
-        $query = 'asli';
+        $query = 'derya';
         $videos = VideoModel::search($query)->get();
 
         return $videos;

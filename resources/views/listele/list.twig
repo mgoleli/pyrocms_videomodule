@@ -8,6 +8,20 @@
     {#            </a>#}
     {#        </div>#}
 
+    <head>
+        <style>
+            table {
+
+            }
+            td,th {
+
+            }
+            tr:nth-child(even){
+
+            }
+        </style>
+    </head>
+
     <div class="container">
         <div class="card bg-light mt-3">
             <div class="card-body">
@@ -38,18 +52,55 @@
 
     <div class="container">
     <form style="float: left">
-        <input class="form-control" id="myInput" type="text" name="keywords" placeholder="" value="{{ searchValue }}" style="display: inline-block !important; width: 200px;"></input>
-{#        value="{{ searchValue }}"#}
+        <input class="form-control" id="myInput" type="text" name="keywords" placeholder="Search" value="{{ searchValue }}" style="display: inline-block !important; width: 200px;"></input>
         <input type="submit" name="action" value="Search" class="btn btn-secondary" style="margin-bottom: 5px;"></input>
         <button onclick="document.getElementById('myInput').value = ''" class="btn btn-secondary"  type="" style="margin-bottom: 5px;">Clear</button>
+        <input class="form-control" id="myInputFilter" type="text" placeholder="Filter videos..">
     </form>
-    </div>
+</div> <br>
     {#        <th scope="col">{{ trans("visiosoft.module.videos::field.name") }}</th>#}
     {#        <th scope="col">{{ trans("visiosoft.module.videos::field.video") }}</th>#}
     {#        <th scope="col">{{ trans("visiosoft.module.videos::field.summary") }}</th>#}
 
 
-    <!-- Button trigger modal -->
+{#algolia#}
+{#    <form method="GET">#}
+{#        <div class="row">#}
+{#            <div class="col-md-6">#}
+{#                <input type="text" name="searchalg" class="form-control" placeholder="algSearch">#}
+{#            </div>#}
+{#            <div class="col-md-6">#}
+{#                <button class="btn btn-info">Search</button>#}
+{#            </div>#}
+{#        </div>#}
+{#    </form>#}
+
+    <script>
+        $(document).ready(function() {
+
+            fetch_customer_data();
+
+            function fetch_customer_data(query = '') {
+                $.ajax({
+                    url: "videos/searchdb",
+                    method: 'GET',
+                    data: {query: query},
+                    dataType: 'json',
+                    success: function (data) {
+                        $('tbody').html(data.table_data);
+                        $('#total_records').text(data.total_data);
+                    }
+                })
+            }
+            $(document).on('keyup', '#search', function(){
+                var query = $(this).val();
+                fetch_customer_data(query);
+            });
+        });
+    </script>
+
+    <input type="text" name="search" id="search" class="form-control" placeholder="Search video Data" />
+    <h3 align="center">Total Data : <span id="total_records"></span></h3>
 
     <div class="container">
     <button type="button" class="btn btn-primary btnadd" data-toggle="modal" data-target="#exampleModal2">
@@ -70,7 +121,7 @@
             <th scope="col"></th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="myTable">
         {% for video in videos %}
             <tr>
                 <td>{{ video.id }}</td>
@@ -92,8 +143,9 @@
             </tr>
 
         {% endfor %}
-
-
+{#            <tr>#}
+{#                <td colspan="3" class="text-danger">Bulunamadı</td>#}
+{#            </tr>#}
         </tbody>
 
     </table>
@@ -305,6 +357,15 @@
     })
     </script>
 
-
+    <script>
+     $(document).ready(function () {
+        $('#myInputFilter').on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+        $("#myTable tr").filter((function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        }));
+        })  ;
+     })   ;
+    </script>
 
 {% endblock %}
