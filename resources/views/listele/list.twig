@@ -8,55 +8,6 @@
     {#            </a>#}
     {#        </div>#}
 
-{#<html>#}
-{#<body>#}
-{#<p> Select </p>#}
-
-{#<select id="mySelect" onchange="myFnc()">#}
-{#    <option value="Audi">Audi</option>#}
-{#    <option value="BMW">BMW</option>#}
-{#    <option value="Mercedes">Mercedes</option>#}
-{#</select>#}
-
-{#<p id="demo"></p>#}
-
-{#<script>#}
-{#    function myFnc() {#}
-{#    var x = document.getElementById("mySelect").value;#}
-{#    document.getElementById("demo").innerHTML = "You selected: " + x;#}
-{#    }#}
-{#</script>#}
-
-{#</body>#}
-{#</html>#}
-
-    <html>
-    <head>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script>
-            $(document).ready(function () {
-            $(" div > span").css("background-color", "yellow");
-            })
-        </script>
-    </head>
-    <body>
-        <h2> $("div > span") select?</h2>
-        <h4>this div has 2 child; p and span</h4>
-
-        <div style="border:1px solid black; padding: 10px">
-            <p>This is a paragraph</p>
-            <span>This is a span</span>
-        </div>
-        <h4> This elements has 1 child</h4>
-
-        <div style="border:1px solid black; padding: 10px;">
-            <p>This is a paragraph. <span>This a span, inside the paragraph</span></p>
-        </div>
-    </body>
-    </html>
-
-
-
     <div class="container">
         <div class="card bg-light mt-3">
             <div class="card-body">
@@ -178,7 +129,7 @@
 
                         <div class="form-group">
                             <label>Name:</label>
-                            <input type="text" onchange="myFunction()" name="name" id="nameA" class="form-control" placeholder="Name">
+                            <input type="text"  name="name" id="nameA" class="form-control" placeholder="Name">
                         </div>
 
                         <div class="form-group">
@@ -346,10 +297,12 @@
     </script>
 
     <script> // for slug
-    function myFunction() {
-    var x = document.getElementById("nameA").value;
-    document.getElementById("slugA").value = "-" + x.toLowerCase();
-    }
+    $(document).ready(function () {
+        $('#nameA').change(function () {
+            var x = document.getElementById("nameA").value;
+            document.getElementById("slugA").value = "_" + x.toLowerCase();
+        })
+    })
     </script>
 
 
