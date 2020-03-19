@@ -35,12 +35,12 @@ class VideoController extends ResourceController
     {
         if (!Auth::user()) {
             redirect('/login?redirect=' . url()->current())->send();
-      }
+        }
 
         $videos = DB::table('videos_video')
-                        ->orderBy('id', 'desc')
-                        ->where('created_by_id', Auth::id())
-                        ->where('deleted_at', NULL);
+            ->orderBy('id', 'desc')
+            ->where('created_by_id', Auth::id())
+            ->where('deleted_at', NULL);
 
         if ($this->request->action == "Search") {
             $searchValue = $this->request->get('keywords');
@@ -140,10 +140,10 @@ class VideoController extends ResourceController
 //        //return redirect('videos');
 
 
-            $query = $request->get('search');
+        $query = $request->get('search');
 
 
-            $videos = VideoModel::search($query)->get();
+        $videos = VideoModel::search($query)->get();
 
         return view('visiosoft.module.videos::listele/list', compact('videos'));
     }
@@ -188,56 +188,25 @@ class VideoController extends ResourceController
 
     public function searchdb(Request $request)
     {
-//    dd('sda');
-        if($request->ajax()){
-            $output = '';
-            $query = $request->get('query');
-            if($query != ''){
-                $videos = DB::table('videos_video')
-                    ->where('name', 'like', '%' . $query.'%')
-                    ->orWhere('video', 'like', '%'.$query.'%')
-                    ->orWhere('summary', 'like', '%'.$query.'%')
-                    ->orderBy('id', 'desc')
-                    ->where('deleted_at', NULL)
-                    ->where('created_by_id', Auth::id())
-                    ->get();
-                //dd($videos);
-            }
-
-            else {
-                $videos = DB::table('videos_video')
-                    ->orderBy('id', 'desc')
-                    ->get();
-            }
-            $total_row = $videos->count();
-            //dd($total_row);
-            if($total_row > 0){
-                foreach ($videos as $video){
-                    $output .= '
-                    <tr>
-                        <td> ' .$video->name.' </td>
-                        <td> ' .$video->video.' </td>
-                        <td> ' .$video->summary.' </td>
-                     </tr>   
-                    ';
-                }
-            }
-            else {
-                $output = '
-                <tr>
-                <td align="center" colspan="5"> </td>
-                </tr>
-                ';
-            }
-            $videos = array(
-                'table_data' => $output,
-                'total_data' => $total_row,
-            );
-            echo json_encode($videos);
+        $videos = DB::table('videos_video')
+                            ->orderBy('id', 'desc')
+                            ->where('deleted_at', NULL)
+                            ->where('created_by_id', Auth::id());
+        // if search if typed
+        $query = $request->get('query');
+        if ($query != '') {
+            $videos = $videos->where('name', 'like', '%' . $query . '%')
+                             ->orWhere('video', 'like', '%' . $query . '%')
+                             ->orWhere('summary', 'like', '%' . $query . '%');
         }
+
+        $total_row = $videos->count();
+        $videos = array(
+            'videos' => $videos->get(),
+            'total_data' => $total_row
+        );
+        echo json_encode($videos);
     }
-
-
 
     public function checkVideoName($videoName)
     {
@@ -245,6 +214,10 @@ class VideoController extends ResourceController
 
     }
 
+    public  function getdata(){
+    //dd('asd');
+
+    }
 
     public function videosAjaxCreate(Request $request)
     {
@@ -256,7 +229,7 @@ class VideoController extends ResourceController
 
 
         //$video2 = $this->video->update($id)->create($this->request->all());
-        return $this->view->make('visiosoft.module.videos::listele/list', compact('video'));
+       // return $this->view->make('visiosoft.module.videos::listele/list', compact('video'));
 
     }
 
@@ -277,7 +250,7 @@ class VideoController extends ResourceController
         $videoModel = new videoModel();
 
         $id = $request->id;
-        $video= $videoModel->getVideosFirst($id);
+        $video = $videoModel->getVideosFirst($id);
 
 
         DB::table('videos_video')->where('id', $id)->update([
@@ -295,12 +268,13 @@ class VideoController extends ResourceController
     {
         $id = $request->id;
 
+        //dd($id);
         $videoModel = new VideoModel();
         $video = $videoModel->getVideosFirst($id);
-        $video->update([
+        $video->delete([
             'videos_video.deleted_at' => date('Y-m-d H:m:s')
         ]);
-        event(new deleteVideos($video));
+        //event(new deleteVideos($video));
         return response()->json(['message' => 'You have successfuly deleted this record']);
     }
 
@@ -325,9 +299,16 @@ class VideoController extends ResourceController
     //algoliaSearch
     public function algSearch(Request $request)
     {
-        $query = 'derya';
+//        if ($request->has('search')){
+//            $query = VideoModel::search(($request->get('search')))->get();
+//        }
+//        else {
+//            $query = VideoModel::get();
+//        }
+        $query = 'ahmet';
         $videos = VideoModel::search($query)->get();
-
         return $videos;
+
+        return view('visiosoft.module.videos::listele/list', compact('query'));
     }
 }

@@ -41,7 +41,7 @@ class VideoModel extends VideosVideoEntryModel implements VideoInterface
 
     public function searchableAs()
     {
-        return 'list';
+        return 'List';
     }
     public function toSearchableArray()
     {

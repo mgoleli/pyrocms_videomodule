@@ -50,14 +50,14 @@
 
 
 
-    <div class="container">
-    <form style="float: left">
-        <input class="form-control" id="myInput" type="text" name="keywords" placeholder="Search" value="{{ searchValue }}" style="display: inline-block !important; width: 200px;"></input>
-        <input type="submit" name="action" value="Search" class="btn btn-secondary" style="margin-bottom: 5px;"></input>
-        <button onclick="document.getElementById('myInput').value = ''" class="btn btn-secondary"  type="" style="margin-bottom: 5px;">Clear</button>
-        <input class="form-control" id="myInputFilter" type="text" placeholder="Filter videos..">
-    </form>
-</div> <br>
+{#    <div class="container">#}
+{#    <form style="float: left">#}
+{#        <input class="form-control" id="myInput" type="text" name="keywords" placeholder="Search" value="{{ searchValue }}" style="display: inline-block !important; width: 200px;"></input>#}
+{#        <input type="submit" name="action" value="Search" class="btn btn-secondary" style="margin-bottom: 5px;"></input>#}
+{#        <button onclick="document.getElementById('myInput').value = ''" class="btn btn-secondary"  type="" style="margin-bottom: 5px;">Clear</button>#}
+{#        <input class="form-control" id="myInputFilter" type="text" placeholder="Filter videos..">#}
+{#    </form>#}
+{#</div> <br>#}
     {#        <th scope="col">{{ trans("visiosoft.module.videos::field.name") }}</th>#}
     {#        <th scope="col">{{ trans("visiosoft.module.videos::field.video") }}</th>#}
     {#        <th scope="col">{{ trans("visiosoft.module.videos::field.summary") }}</th>#}
@@ -76,22 +76,82 @@
 {#    </form>#}
 
     <script>
+
+        function  deleteA(e) {
+
+            if (!confirm('Are you sure you want to delete?')) {
+                return false;
+            }
+            //e.preventDefault();
+            var id = $(e).data("id");
+           // console.log(id);
+            $.ajax({
+                type: 'DELETE',
+                url: 'videos/videosAjaxDelete/' + id,
+
+                success: function (data) {
+                    alert(data.message);
+                    //location.reload();
+                    fetch_customer_data()
+                },
+                error: function (data) {
+                    alert('hata');
+                }
+            });
+
+        }
+
+        function editA (e) {
+            $('#exampleModal3').modal('show');
+
+
+
+            var tr = $(e).closest('tr');
+           // console.log(tr.html());
+            var data = tr.children('td').map(function () {
+                return $(this).text();
+            }).get();
+            console.log(data);
+            $('#id').val(data[0]);
+            $('#name').val(data[1]);
+            $('#video').val(data[2]);
+            $('#summary').val(data[3]);
+        }
+
+        function fetch_customer_data(query = '') {
+            $.ajax({
+                url: "videos/searchdb",
+                method: 'GET',
+                data: {query: query},
+                dataType: 'json',
+                success: function (data) {
+                    $('tbody').html(data.videos);
+                    $('#total_records').text(data.total_data);
+
+                    $.each(data.videos, function(index, value) {
+                        console.log(value);
+                        $("#myTable").append("<tr>" +
+                            " <td>"+ value.id + " </td>" +
+                            "<td>"+ value.name + " </td> " +
+                            "<td>"+ value.video + " </td> " +
+                            "<td>" + value.summary + "</td>" +
+                            "<td><a onclick='editA(this)' class='btn btn-sm btn-success editbtn'>Edit</a></td>" +
+                            "<td><a  data-id = ' "+ value.id +" ' onclick='deleteA(this)' class='btn btn-sm btn-danger btn-danger'>Delete</a>" +
+                            "</td>" +
+                            "</tr>"
+
+                        )
+                    });
+
+
+                }
+            })
+        }
+
         $(document).ready(function() {
 
             fetch_customer_data();
 
-            function fetch_customer_data(query = '') {
-                $.ajax({
-                    url: "videos/searchdb",
-                    method: 'GET',
-                    data: {query: query},
-                    dataType: 'json',
-                    success: function (data) {
-                        $('tbody').html(data.table_data);
-                        $('#total_records').text(data.total_data);
-                    }
-                })
-            }
             $(document).on('keyup', '#search', function(){
                 var query = $(this).val();
                 fetch_customer_data(query);
@@ -100,14 +160,25 @@
     </script>
 
     <input type="text" name="search" id="search" class="form-control" placeholder="Search video Data" />
-    <h3 align="center">Total Data : <span id="total_records"></span></h3>
+{#    <h3 align="center">Total Data : <span id="total_records"></span></h3>#}
 
     <div class="container">
     <button type="button" class="btn btn-primary btnadd" data-toggle="modal" data-target="#exampleModal2">
         Createaa
     </button>
-        <button type="button" class="btn glyphicon-refresh" value="get data" id="data">Yenile</button>
+{#        <button type="button" class="btn glyphicon-refresh"  value="get data" id="data">Yenile</button>#}
     </div>
+
+{#    <form method="get" action="{{ url('index') }}">#}
+{#        <div class="row">#}
+{#            <div class="col-md-6">#}
+{#                <input type="text" name="search" class="form-control" placeholder="Search">#}
+{#            </div>#}
+{#            <div class="col-md-6">#}
+{#                <button class="btn btn-info">Search</button>#}
+{#            </div>#}
+{#        </div>#}
+{#    </form>#}
 
     <table id="datatable" class="table table-bordered">
 
@@ -122,45 +193,19 @@
         </tr>
         </thead>
         <tbody id="myTable">
-        {% for video in videos %}
-            <tr>
-                <td>{{ video.id }}</td>
-                <td>{{ video.name }}</td>
-                <td>{{ video.video }}</td>
-                <td>{{ video.summary }}</td>
 
-                <td>
-                    <a style="float:right;" class="btn btn-sm btn-success editbtn"
-
-                       role="button">
-                        <i class="fas fa-pencil-alt" aria-hidden="true"></i>Edit</a>
-                    <a style="float:right; margin-right: 10px;" class="btn btn-sm btn-danger"
-                       data-id="{{ video.id }}"
-                       role="button"
-                       onclick="return confirm('This action will delete the record from your table. Do you want to proceed?')">
-                        <i class="fas fa-pencil-alt" aria-hidden="true"></i>Delete</a>
-                </td>
-            </tr>
-
-        {% endfor %}
-{#            <tr>#}
-{#                <td colspan="3" class="text-danger">Bulunamadı</td>#}
-{#            </tr>#}
         </tbody>
 
     </table>
     {{ videos.links()|raw }}
 
-    </div>
+
 
     <script type="text/javascript">
-    $(document).ready(function () {
-    function RefreshTable() {
-        $('#datatable').load("/videos #datatable" );
-    }
-    $('#data').on("click", RefreshTable);
-    })
-
+     function Refresh(){
+         $("#myTable").load("videos #myTable");
+     }
+     $("#data").on("click", Refresh)
     </script>
 
     <!-- ADD_Modal -->
@@ -263,7 +308,9 @@
                         console.log(data);
                         $('#exampleModal2').modal('hide');
                         alert("veri eklendi");
+                        fetch_customer_data()
                         //location.reload();
+
                     },
                     error: function (error) //
                     {
@@ -279,22 +326,7 @@
     <script>
 
 
-        $('.btn-danger').click(function (e) {
 
-                e.preventDefault();
-                var id = $(this).data("id");
-
-                $.ajax({
-                    type: 'DELETE',
-                    url: 'videos/videosAjaxDelete/' + id,
-                    data: {id: id},
-                    success: function (data) {
-                        alert(data.message);
-                        //location.reload();
-                    }
-                });
-
-        });
 
 
     </script>
@@ -313,19 +345,7 @@
 
     <script>
         $(document).ready(function () {
-            $('.editbtn').on('click', function () {
-                $('#exampleModal3').modal('show');
 
-                $tr = $(this).closest('tr');
-                var data = $tr.children('td').map(function () {
-                    return $(this).text();
-                }).get();
-                console.log(data);
-                $('#id').val(data[0]);
-                $('#name').val(data[1]);
-                $('#video').val(data[2]);
-                $('#summary').val(data[3]);
-            });
 
             $(".btn-submit").click(function(e){
                 e.preventDefault();
@@ -341,6 +361,7 @@
                     success:function(data){
                         $('#exampleModal3').modal('hide');
                         alert("güncelleme basarili");
+                        fetch_customer_data()
 
                     }
                 });
