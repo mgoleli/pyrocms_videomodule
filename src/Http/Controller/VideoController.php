@@ -210,7 +210,7 @@ class VideoController extends ResourceController
 
     public function checkVideoName($videoName)
     {
-        return DB::table('videos_video')->where('name', '=', $videoName)->count();
+        return (DB::table('videos_video')->where('name', '=', $videoName)->count());
 
     }
 
@@ -221,13 +221,11 @@ class VideoController extends ResourceController
 
     public function videosAjaxCreate(Request $request)
     {
-        $video = new VideoModel();
-        $video = $this->video->create($this->request->all());
+      $video = new VideoModel();
+      $video = $this->video->create($this->request->all());
+        event(new NewVideos($video));
 
-        event(new newVideos($video));
-        return response()->json(['status' => 'success', 'data' => $video]);
-
-
+      return response()->json( ['status' => 'success', 'data' => $video]);
         //$video2 = $this->video->update($id)->create($this->request->all());
        // return $this->view->make('visiosoft.module.videos::listele/list', compact('video'));
 
