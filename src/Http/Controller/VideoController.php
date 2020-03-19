@@ -65,37 +65,38 @@ class VideoController extends ResourceController
         $this->user = $user;
     }
 
-    /*public function create(VideoFormBuilder $form)
+    public function create(VideoFormBuilder $form)
     {
         return $form->render();
-    } */
-
-    public function create(VideoFormBuilder $form, Request $request) //videosAjaxCreate- duplicate
-    {
-//        if (!Auth::user()) {
-//            redirect('/login?redirect=' . url()->current())->send();
-//        }
-//        if (isset($request->request->all()['action']) == "save") {
-//            $error = $form->build()->validate()->getFormErrors()->getMessages();
-//            if (!empty($error)) {
-//                return $this->redirect->back();
-//            }
-//            $new_videos = $request->request->all();
-//            //dd($new_videos);
-//            unset($new_videos['action']);
-//            // $new_videos['user_id'] = Auth::id();   //kullanıcı id sini userid ye yaz
-//
-//            $videoModel = new VideoModel();
-//            $videoModel->getVideos()->create($new_videos);
-//
-//            $message = [];
-//            $message[] = trans('visiosoft.module.videos::message.video_success_create');
-//            return redirect('videos');
-//        }
-//
-//        $category = CategoryModel::all();
-//        return $this->view->make('visiosoft.module.videos::videos/create', compact('category')); //
     }
+
+//    public function create(VideoFormBuilder $form, Request $request) //videosAjaxCreate- duplicate
+//    {
+////        if (!Auth::user()) {
+////            redirect('/login?redirect=' . url()->current())->send();
+////        }
+////        if (isset($request->request->all()['action']) == "save") {
+////            $error = $form->build()->validate()->getFormErrors()->getMessages();
+////            if (!empty($error)) {
+////                return $this->redirect->back();
+////            }
+////            $new_videos = $request->request->all();
+////            //dd($new_videos);
+////            unset($new_videos['action']);
+////            // $new_videos['user_id'] = Auth::id();   //kullanıcı id sini userid ye yaz
+////
+////            $videoModel = new VideoModel();
+////            $videoModel->getVideos()->create($new_videos);
+////
+////            $message = [];
+////            $message[] = trans('visiosoft.module.videos::message.video_success_create');
+////            return redirect('videos');
+////        }
+////
+////        $category = CategoryModel::all();
+////        return $this->view->make('visiosoft.module.videos::videos/create', compact('category')); //
+//        return $form->render();
+//    }
 
 
     public function VideoEdit($id)  //
@@ -221,11 +222,17 @@ class VideoController extends ResourceController
 
     public function videosAjaxCreate(Request $request)
     {
-      $video = new VideoModel();
-      $video = $this->video->create($this->request->all());
-        event(new NewVideos($video));
+        $video = new VideoModel();
+        $name = $request->name;
+        if($this->checkVideoName($name) > 0 ){
+            return response()->json( ['status' => 'zaten kayit var']);
+        }
+        else {
+            $video = $this->video->create($this->request->all());
+            event(new NewVideos($video));
+        }
 
-      return response()->json( ['status' => 'success', 'data' => $video]);
+        return response()->json( ['message' => 'success created', 'data' => $video]);
         //$video2 = $this->video->update($id)->create($this->request->all());
        // return $this->view->make('visiosoft.module.videos::listele/list', compact('video'));
 
@@ -303,10 +310,10 @@ class VideoController extends ResourceController
 //        else {
 //            $query = VideoModel::get();
 //        }
-        $query = 'ahmet';
+        $query = 'derya';
         $videos = VideoModel::search($query)->get();
         return $videos;
 
-        return view('visiosoft.module.videos::listele/list', compact('query'));
+        //return view('visiosoft.module.videos::listele/list', compact('query'));
     }
 }

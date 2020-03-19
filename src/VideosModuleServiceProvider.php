@@ -48,11 +48,11 @@ class VideosModuleServiceProvider extends AddonServiceProvider
 
         'getdata' => 'Visiosoft\VideosModule\Http\Controller\VideoController@getdata',
         'videos/searchdb' => 'Visiosoft\VideosModule\Http\Controller\VideoController@searchdb',
-        'index' => 'Visiosoft\VideosModule\Http\Controller\VideoController@algSearch',
+        'videos/algsearch' => 'Visiosoft\VideosModule\Http\Controller\VideoController@algSearch',
         'listele/list' => 'Visiosoft\VideosModule\Http\Controller\VideoController@search',
         'admin/videos' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideoController@index',
-        'admin/videos/create' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideoController@create',
-        'admin/videos/edit/{id}' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideoController@edit',
+        'admin/videos/create' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideosController@create',
+        'admin/videos/edit/{id}' => 'Visiosoft\VideosModule\Http\Controller\Admin\VideosController@edit',
 
         'videos' => 'Visiosoft\VideosModule\Http\Controller\VideoController@index',
         'videos/create' => [

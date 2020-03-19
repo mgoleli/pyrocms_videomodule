@@ -1,6 +1,9 @@
 <?php namespace Visiosoft\VideosModule\Http\Controller\Admin;
 
 use Anomaly\UsersModule\User\UserModel;
+use Anomaly\UsersModule\User\UserRepository;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 use Visiosoft\VideosModule\Video\Form\VideoFormBuilder;
 use Visiosoft\VideosModule\Video\Table\VideoTableBuilder;
 use Anomaly\Streams\Platform\Http\Controller\AdminController;
@@ -24,26 +27,26 @@ class VideoController extends AdminController
     public function index(VideoTableBuilder $table, Builder $builder)
     {
         $table->setColumns([
-            'name','summary', 'slug', 'username'
+            'name','slug', 'video', 'summary'
         ]);
         $table->setFilters([
             'Video' => [
                 'filter' => 'select',
                 'placeholder' => 'Username',
-                'query' => AdminFilter::class,
+                'query' => aFilter::class,
                 'option' => function(){
             return UserModel::query()->get()->pluck('display_name')->all();
                 },
             ],
             'Search' => [
                 'filter' => 'input',
-                'placeholder' => 'Video',
+                'placeholder' => 'username',
                 'query' => InputFilter::class,
             ]
         ]);
 
-        $users = DB::table('users')->simplePaginate(1); //pagination
-        return view('user.index', ['users' => $users]);
+//        $users = DB::table('videos')->simplePaginate(1); //pagination
+//        return view('list', ['videos' => $users]);
 
         return $table->render();
     }

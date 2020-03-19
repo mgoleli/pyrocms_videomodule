@@ -7,7 +7,7 @@
     {#                Create#}
     {#            </a>#}
     {#        </div>#}
-
+    {% include "theme::partials/messages" %}
     <head>
         <style>
             table {
@@ -104,8 +104,6 @@
         function editA (e) {
             $('#exampleModal3').modal('show');
 
-
-
             var tr = $(e).closest('tr');
            // console.log(tr.html());
             var data = tr.children('td').map(function () {
@@ -153,9 +151,18 @@
             fetch_customer_data();
 
             $(document).on('keyup', '#search', function(){
+                if(this.value.match(/[^a-zA-Z]/g)){
+                    this.value = this.value.replace(/[^a-zA-Z]/g, '');
+                }
                 var query = $(this).val();
                 fetch_customer_data(query);
             });
+        });
+
+        $(document).on('keyup', '.name', function () {
+            if(this.value.match(/[^a-zA-Z]/g)) {
+                this.value = this.value.replace(/[^a-zA-Z]/g, '');
+            }
         });
     </script>
 
@@ -201,13 +208,6 @@
 
 
 
-    <script type="text/javascript">
-     function Refresh(){
-         $("#myTable").load("videos #myTable");
-     }
-     $("#data").on("click", Refresh)
-    </script>
-
     <!-- ADD_Modal -->
     <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
          aria-hidden="true">
@@ -226,7 +226,7 @@
 
                         <div class="form-group">
                             <label>Name:</label>
-                            <input type="text"  name="name" id="nameA" class="form-control" placeholder="Name">
+                            <input type="text"  name="name" id="nameA" class="form-control name" placeholder="Name">
                         </div>
 
                         <div class="form-group">
@@ -271,7 +271,7 @@
                         <div class="form-group">
                                             <input type="hidden" name="id" id="id" class="form-control" value="">
                                             <label>Name:</label>
-                                            <input type="text" name="name" id="name" class="form-control">
+                                            <input type="text" name="name" id="name" class="form-control name">
                                         </div>
 
                                         <div class="form-group">
@@ -307,7 +307,7 @@
                     success: function (data) {
                         console.log(data);
                         $('#exampleModal2').modal('hide');
-                        alert("veri eklendi");
+                        //alert("veri eklendi");
                         fetch_customer_data()
                         //location.reload();
 
@@ -321,17 +321,6 @@
             });
         });
     </script>
-
-
-    <script>
-
-
-
-
-
-    </script>
-
-
 
     <script>
         $(document).ready(function(){
@@ -373,7 +362,7 @@
     $(document).ready(function () {
         $('#nameA').change(function () {
             var x = document.getElementById("nameA").value;
-            document.getElementById("slugA").value = "_" + x.toLowerCase();
+            document.getElementById("slugA").value = x.toLowerCase();
         })
     })
     </script>

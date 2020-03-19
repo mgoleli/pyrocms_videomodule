@@ -57,7 +57,8 @@ class VideoTableBuilder extends TableBuilder
      * @var array|string
      */
     protected $buttons = [
-        'edit'
+        'edit',
+        'delete'
     ];
 
     /**

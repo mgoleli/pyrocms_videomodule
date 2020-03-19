@@ -35,9 +35,9 @@ class VideoModel extends VideosVideoEntryModel implements VideoInterface
 
     }
 
-    protected $fillable  = [
-            'name', 'slug', 'video', 'summary',
-        ];
+//    protected $fillable  = [
+//            'name', 'slug', 'video', 'summary',
+//        ];
 
     public function searchableAs()
     {
